@@ -1,0 +1,19 @@
+set security nat destination pool dst-nat-pool-1 address 192.168.1.200/32
+set security nat destination pool dst-nat-pool-1 address port 80
+set security nat destination pool dst-nat-pool-2 address 192.168.1.220/32
+set security nat destination pool dst-nat-pool-2 address port 8000
+set security nat destination rule-set rs1 from zone untrust
+set security nat destination rule-set rs1 rule r1 match destination-address 203.0.113.200/32
+set security nat destination rule-set rs1 rule r1 match destination-port 80
+set security nat destination rule-set rs1 rule r1 then destination-nat pool dst-nat-pool-1
+set security nat destination rule-set rs1 rule r2 match destination-address 203.0.113.200/32
+set security nat destination rule-set rs1 rule r2 match destination-port 8000
+set security nat destination rule-set rs1 rule r2 then destination-nat pool dst-nat-pool-2
+set security nat proxy-arp interface ge-0/0/0.0 address 203.0.113.200/32
+set security address-book global address server-2 192.168.1.220/32
+set security address-book global address server-1 192.168.1.200/32
+set security policies from-zone untrust to-zone trust policy server-access match source-address any
+set security policies from-zone untrust to-zone trust policy server-access match destination-address server-1
+set security policies from-zone untrust to-zone trust policy server-access match destination-address server-2
+set security policies from-zone untrust to-zone trust policy server-access match application any
+set security policies from-zone untrust to-zone trust policy server-access then permit
